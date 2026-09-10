@@ -1,29 +1,24 @@
 import React, { useState } from 'react';
+import { Link, useRouter } from 'expo-router';
 import {
   Pressable,
+  ScrollView,
   StyleSheet,
   TextInput,
-  View
+  View,
 } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 
 export default function HomeScreen() {
-  // ==========================================
-  // STATE
-  // ==========================================
+  const router = useRouter();
 
   const [firstNumber, setFirstNumber] = useState('');
   const [secondNumber, setSecondNumber] = useState('');
   const [result, setResult] = useState('');
   const [error, setError] = useState('');
 
-  // ==========================================
-  // CALCULATE
-  // ==========================================
-
   const calculate = (operator: string) => {
-    // Validate empty inputs
     if (
       firstNumber.trim() === '' ||
       secondNumber.trim() === ''
@@ -33,18 +28,15 @@ export default function HomeScreen() {
       return;
     }
 
-    // Convert input to numbers
     const num1 = Number(firstNumber);
     const num2 = Number(secondNumber);
 
-    // Validate numbers
     if (isNaN(num1) || isNaN(num2)) {
       setError('Please enter valid numbers.');
       setResult('');
       return;
     }
 
-    // Prevent division by zero
     if (operator === '/' && num2 === 0) {
       setError('Cannot divide by zero.');
       setResult('');
@@ -53,7 +45,6 @@ export default function HomeScreen() {
 
     let answer = 0;
 
-    // Perform calculation
     switch (operator) {
       case '+':
         answer = num1 + num2;
@@ -79,10 +70,6 @@ export default function HomeScreen() {
     setError('');
   };
 
-  // ==========================================
-  // CLEAR
-  // ==========================================
-
   const clearCalculator = () => {
     setFirstNumber('');
     setSecondNumber('');
@@ -90,15 +77,11 @@ export default function HomeScreen() {
     setError('');
   };
 
-  // ==========================================
-  // USER INTERFACE
-  // ==========================================
-
   return (
-    <View style={styles.container}>
-
-      {/* HEADER */}
-
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
       <ThemedText style={styles.title}>
         Simple Calculator
       </ThemedText>
@@ -106,9 +89,6 @@ export default function HomeScreen() {
       <ThemedText style={styles.subtitle}>
         Enter two numbers and select an operation
       </ThemedText>
-
-
-      {/* FIRST NUMBER */}
 
       <ThemedText style={styles.label}>
         First Number
@@ -123,9 +103,6 @@ export default function HomeScreen() {
         onChangeText={setFirstNumber}
       />
 
-
-      {/* SECOND NUMBER */}
-
       <ThemedText style={styles.label}>
         Second Number
       </ThemedText>
@@ -139,9 +116,6 @@ export default function HomeScreen() {
         onChangeText={setSecondNumber}
       />
 
-
-      {/* ERROR MESSAGE */}
-
       {error !== '' && (
         <View style={styles.errorBox}>
           <ThemedText style={styles.errorText}>
@@ -150,15 +124,11 @@ export default function HomeScreen() {
         </View>
       )}
 
-
-      {/* OPERATIONS */}
-
       <ThemedText style={styles.operationTitle}>
         Select Operation
       </ThemedText>
 
       <View style={styles.buttonRow}>
-
         <Pressable
           style={styles.operationButton}
           onPress={() => calculate('+')}
@@ -194,14 +164,9 @@ export default function HomeScreen() {
             ÷
           </ThemedText>
         </Pressable>
-
       </View>
 
-
-      {/* RESULT */}
-
       <View style={styles.resultCard}>
-
         <ThemedText style={styles.resultLabel}>
           Result
         </ThemedText>
@@ -209,11 +174,7 @@ export default function HomeScreen() {
         <ThemedText style={styles.result}>
           {result === '' ? '—' : result}
         </ThemedText>
-
       </View>
-
-
-      {/* CLEAR BUTTON */}
 
       <Pressable
         style={styles.clearButton}
@@ -224,22 +185,46 @@ export default function HomeScreen() {
         </ThemedText>
       </Pressable>
 
-    </View>
+      <View style={styles.navigationContainer}>
+        <Pressable
+          style={styles.navigationButton}
+          onPress={() => router.push('/profile')}
+        >
+          <ThemedText style={styles.navigationButtonText}>
+            Go to Profile
+          </ThemedText>
+        </Pressable>
+
+        <Link href="/settings" asChild>
+          <Pressable style={styles.navigationButton}>
+            <ThemedText style={styles.navigationButtonText}>
+              Go to Settings
+            </ThemedText>
+          </Pressable>
+        </Link>
+
+        <Link href="/course/CCE106" asChild>
+          <Pressable style={styles.navigationButton}>
+            <ThemedText style={styles.navigationButtonText}>
+              View Course
+            </ThemedText>
+          </Pressable>
+        </Link>
+      </View>
+    </ScrollView>
   );
 }
 
-
-// ==========================================
-// STYLES
-// ==========================================
-
 const styles = StyleSheet.create({
-
   container: {
     flex: 1,
     backgroundColor: '#F5F7FB',
+  },
+
+  contentContainer: {
     padding: 20,
     paddingTop: 70,
+    paddingBottom: 120,
   },
 
   title: {
@@ -324,9 +309,7 @@ const styles = StyleSheet.create({
     padding: 25,
     alignItems: 'center',
     marginBottom: 20,
-
     elevation: 3,
-
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -363,4 +346,23 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
 
+  navigationContainer: {
+    marginTop: 15,
+    gap: 10,
+  },
+
+  navigationButton: {
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: '#6C63FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  navigationButtonText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '700',
+  },
 });
+
